@@ -4,6 +4,44 @@ import streamlit as st
 
 
 def parse_json_to_df(raw_text: str, normalize: bool = True) -> pd.DataFrame:
+    """
+    Parse a JSON string and convert it to a pandas DataFrame.
+
+    This function handles various JSON structures, including:
+    - A dictionary where all values are lists (e.g., column-oriented JSON).
+    - A single dictionary representing one record.
+    - A list of dictionaries (records).
+
+    The `normalize` parameter controls whether to use `pd.json_normalize` for flattening nested data.
+
+    Parameters
+    ----------
+    raw_text : str
+        The JSON string to parse. Must not be empty.
+    normalize : bool, optional
+        If True (default), use `pandas.json_normalize` to flatten nested structures.
+        If False, use `pandas.DataFrame` directly where possible.
+
+    Returns
+    -------
+    pd.DataFrame
+        The resulting DataFrame parsed from the JSON input.
+
+    Raises
+    ------
+    ValueError
+        If the input string is empty or only whitespace.
+    json.JSONDecodeError
+        If the input string is not valid JSON.
+
+    Notes
+    -----
+    - If the input is a dict with all list values and `normalize` is True, uses `pd.json_normalize`.
+    - If the input is a dict with all list values and `normalize` is False, uses `pd.DataFrame`.
+    - If the input is a single dict, wraps it in a list.
+    - If the input is a list of dicts, uses `pd.json_normalize` or `pd.DataFrame` depending on `normalize`.
+    - If DataFrame construction fails, falls back to `pd.json_normalize`.
+    """
     raw_text = raw_text.strip()
     if not raw_text:
         raise ValueError("No JSON provided")
