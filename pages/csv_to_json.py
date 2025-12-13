@@ -46,8 +46,12 @@ def _nest_flat_record(flat: Dict[str, Any]) -> Dict[str, Any]:
         else:
             # avoid overwriting previously created nested object
             if key in nested and isinstance(nested[key], dict):
-                # keep nested as-is (cannot coerce)
-                nested[key]["value"] = value
+                # Conflict: key exists as a nested object due to dotted keys, cannot assign non-dotted value
+                raise ValueError(
+                    f"Conflict detected: key '{key}' exists as a nested object due to dotted keys, "
+                    f"but also appears as a non-dotted key in the same record. "
+                    f"Cannot merge these into a consistent structure."
+                )
             else:
                 nested[key] = value
     return nested
