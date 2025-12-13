@@ -62,11 +62,6 @@ def _records_from_df(df: pd.DataFrame, observe_nested: bool) -> Any:
     return records
 
 
-def _convert_from_file():
-    # This function is kept for compatibility but should receive the uploaded file as an argument
-    st.session_state.convert_error = "No file uploaded"
-
-
 def _convert_from_file(file_obj):
     st.session_state.convert_error = ""
     if not file_obj:
