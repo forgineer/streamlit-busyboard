@@ -107,7 +107,7 @@ def render():
         )
 
         # Observe nested checkbox (present in both modes)
-        observe = st.checkbox("Observe Nested Structures", value=st.session_state.observe_nested, key="observe_nested")
+        st.checkbox("Observe Nested Structures", value=st.session_state.observe_nested, key="observe_nested")
 
         if mode == "CSV File":
             # File upload path: show uploader left-justified in a narrower left column and Convert button beneath it
