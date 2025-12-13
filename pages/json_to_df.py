@@ -109,18 +109,18 @@ def render():
     # Use Streamlit's built-in `type` parameter on buttons below
 
     if not st.session_state.converted:
-        controls_col1, controls_col2 = st.columns([1, 1])
-        with controls_col1:
-            st.checkbox("Normalize JSON (use json_normalize)", key="normalize")
-        with controls_col2:
-            st.button("Convert JSON", on_click=do_convert, type="primary")
+        # Show normalization option above the textbox
+        st.checkbox("Normalize JSON (use json_normalize)", key="normalize")
 
         st.text_area(
             "Paste JSON records here",
             value=st.session_state.json_input,
-            height=600,
+            height=500,
             key="json_input",
         )
+
+        # Convert button below the textbox
+        st.button("Convert JSON", on_click=do_convert, type="primary")
 
         if st.session_state.convert_error:
             st.error(f"Failed to parse JSON: {st.session_state.convert_error}")
