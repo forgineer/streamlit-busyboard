@@ -135,19 +135,24 @@ def render():
             st.subheader("JSON Records")
             # Render a copy + download UI using an HTML textarea and buttons.
             json_text = st.session_state.json_output
-            # Create a data URI for download
-            data_uri = "data:application/json;charset=utf-8," + urllib.parse.quote(json_text)
+            # Show JSON in a textarea and provide copy/download buttons
             escaped = _html.escape(json_text)
             html = f"""
             <div>
               <textarea id="jsonBox" style="width:100%;height:420px;">{escaped}</textarea>
               <div style="margin-top:8px;">
                 <button onclick="navigator.clipboard.writeText(document.getElementById('jsonBox').value)">Copy JSON</button>
-                <a download="converted.json" href="{data_uri}"><button>Download JSON</button></a>
               </div>
             </div>
             """
             components.html(html, height=500)
+            # Use Streamlit's built-in download button for safe file download
+            st.download_button(
+                label="Download JSON",
+                data=json_text,
+                file_name="converted.json",
+                mime="application/json"
+            )
 
         def _go_back():
             st.session_state.converted = False
