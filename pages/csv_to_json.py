@@ -2,7 +2,7 @@ import io
 import json
 import urllib.parse
 import html as _html
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import pandas as pd
 import streamlit as st
@@ -53,7 +53,7 @@ def _nest_flat_record(flat: Dict[str, Any]) -> Dict[str, Any]:
     return nested
 
 
-def _records_from_df(df: pd.DataFrame, observe_nested: bool) -> Any:
+def _records_from_df(df: pd.DataFrame, observe_nested: bool) -> List[Dict[str, Any]]:
     """
     Convert a pandas DataFrame to a list of dictionaries (JSON records).
 
@@ -76,10 +76,10 @@ def _records_from_df(df: pd.DataFrame, observe_nested: bool) -> Any:
 
     Returns
     -------
-    Any
+    List[Dict[str, Any]]
         A list of dictionaries representing the DataFrame records. Each dictionary
-        represents one row from the DataFrame. The return type is Any to accommodate
-        various nested structures when observe_nested is True.
+        represents one row from the DataFrame. Values can be of any type depending
+        on the DataFrame contents and nested structure handling.
 
     Notes
     -----
