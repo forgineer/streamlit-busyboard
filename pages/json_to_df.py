@@ -49,7 +49,7 @@ def parse_json_to_df(raw_text: str, normalize: bool = True) -> pd.DataFrame:
     data = json.loads(raw_text)
 
     if isinstance(data, dict):
-        if all(isinstance(v, list) for v in data.values()):
+        if data and all(isinstance(v, list) for v in data.values()):
             if normalize:
                 return pd.json_normalize(data)
             return pd.DataFrame(data)
