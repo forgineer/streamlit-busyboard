@@ -1,6 +1,6 @@
 import streamlit as st
 
-from pages import json_to_df, placeholder
+from pages import json_to_df, placeholder, csv_to_json
 
 
 st.set_page_config(page_title="Busy Board", layout="wide")
@@ -9,6 +9,7 @@ st.set_page_config(page_title="Busy Board", layout="wide")
 st.sidebar.title("📋 Busy Board")
 pages = {
     "JSON → DataFrame": json_to_df,
+    "CSV → JSON": csv_to_json,
     "Placeholder Page": placeholder,
 }
 page = st.sidebar.radio("Pages", list(pages.keys()))
