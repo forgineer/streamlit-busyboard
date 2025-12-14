@@ -105,7 +105,7 @@ def render():
     else:
         df = st.session_state.json_df
         if df is not None:
-            st.dataframe(df, width=None)
+            st.dataframe(df)
             csv_bytes = df.to_csv(index=False).encode("utf-8")
             st.download_button(
                 "📥 Download CSV",
