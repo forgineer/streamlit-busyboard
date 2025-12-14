@@ -1,6 +1,5 @@
 import io
 import json
-import urllib.parse
 import html as _html
 from typing import Any, Dict, List
 
