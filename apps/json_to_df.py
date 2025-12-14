@@ -29,8 +29,8 @@ def parse_json_to_df(raw_text: str, normalize: bool = True) -> pd.DataFrame:
 def _ensure_state():
     if "json_input" not in st.session_state:
         st.session_state.json_input = ""
-    if "normalize" not in st.session_state:
-        st.session_state.normalize = True
+    if "json_normalize" not in st.session_state:
+        st.session_state.json_normalize = True
     if "json_converted" not in st.session_state:
         st.session_state.json_converted = False
     if "json_df" not in st.session_state:
@@ -41,7 +41,7 @@ def _ensure_state():
 
 def do_convert():
     try:
-        df = parse_json_to_df(st.session_state.json_input, normalize=st.session_state.normalize)
+        df = parse_json_to_df(st.session_state.json_input, normalize=st.session_state.json_normalize)
         st.session_state.json_df = df
         st.session_state.json_converted = True
         st.session_state.json_convert_error = ""
@@ -63,7 +63,7 @@ def render():
         st.session_state.json_converted = False
 
     if not st.session_state.json_converted:
-        st.checkbox("Normalize JSON (use json_normalize)", key="normalize")
+        st.checkbox("Normalize JSON (use json_normalize)", key="json_normalize")
 
         st.text_area(
             "Paste JSON records here",
