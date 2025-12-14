@@ -1,18 +1,20 @@
 import streamlit as st
 
-from pages import json_to_df, placeholder, csv_to_json
-
 
 st.set_page_config(page_title="Busy Board", layout="wide")
 
-# Sidebar navigation
-st.sidebar.title("📋 Busy Board")
-pages = {
-    "JSON → DataFrame": json_to_df,
-    "CSV → JSON": csv_to_json,
-    "Placeholder Page": placeholder,
-}
-page = st.sidebar.radio("Pages", list(pages.keys()))
 
-# Render selected page
-pages[page].render()
+def home():
+    st.title("📋 Busy Board")
+    st.write("Choose a tool from the top navigation.")
+
+
+# Register pages using Streamlit's Page navigation API
+pages = [
+    st.Page(home, title="Home"),
+    st.Page("apps/csv_to_json.py", title="CSV → JSON"),
+    st.Page("apps/json_to_df.py", title="JSON → DataFrame"),
+]
+
+nav = st.navigation(pages)
+nav.run()
