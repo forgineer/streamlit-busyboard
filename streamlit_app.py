@@ -14,6 +14,7 @@ pages = [
     st.Page(home, title="Home"),
     st.Page("apps/csv_to_json.py", title="CSV → JSON"),
     st.Page("apps/json_to_df.py", title="JSON → DataFrame"),
+    st.Page("apps/list_converter.py", title="List → IN List"),
 ]
 
 nav = st.navigation(pages)
