@@ -67,6 +67,39 @@ def _nest_flat_record(flat: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _records_from_df(df: pd.DataFrame, observe_nested: bool) -> List[Dict[str, Any]]:
+    """
+    Convert a pandas DataFrame to a list of dictionaries (JSON records).
+
+    This function converts a DataFrame into a list of record dictionaries, with optional
+    support for nested structures. NaN/NA values are replaced with empty strings to
+    ensure clean JSON output without null values.
+
+    When `observe_nested` is True, the function will interpret column names with
+    dot notation (e.g., "address.city") as nested structures and convert them
+    accordingly using `_nest_flat_record`.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame to convert to JSON records.
+    observe_nested : bool
+        If True, convert flat column names with dot notation into nested dictionaries.
+        For example, a column "address.city" will become {"address": {"city": ...}}.
+        If False, keep all keys at the top level.
+
+    Returns
+    -------
+    List[Dict[str, Any]]
+        A list of dictionaries representing the DataFrame records. Each dictionary
+        represents one row from the DataFrame. Values can be of any type depending
+        on the DataFrame contents and nested structure handling.
+
+    Notes
+    -----
+    - All NaN and NA values in the DataFrame are replaced with empty strings ("").
+    - When observe_nested is False, returns a simple list of flat dictionaries.
+    - When observe_nested is True, uses `_nest_flat_record` to create nested structures.
+    """
     df_clean = df.fillna("")
     records = df_clean.to_dict(orient="records")
     if observe_nested:
