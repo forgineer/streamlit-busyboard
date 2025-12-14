@@ -1,6 +1,5 @@
 import io
 import json
-import urllib.parse
 import html as _html
 from typing import Any, Dict, List
 
@@ -11,27 +10,39 @@ import streamlit.components.v1 as components
 
 def _ensure_state():
     if "csv_input" not in st.session_state:
-        st.session_state.csv_input = """name,age,email,address.line1,address.line2,address.city,address.state,address.zip
-Alice,30,alice@example.com,123 Main St,Apt 1,New York,NY,10001
-Bob,25,bob@example.com,456 Market Ave,,San Francisco,CA,94105
-Carol,42,carol@example.com,789 Oak Dr,Suite 200,Chicago,IL,60611
-"""
+        st.session_state.csv_input = ""
     if "observe_nested" not in st.session_state:
         st.session_state.observe_nested = False
-    if "converted" not in st.session_state:
-        st.session_state.converted = False
-    if "json_output" not in st.session_state:
-        st.session_state.json_output = ""
-    if "convert_error" not in st.session_state:
-        st.session_state.convert_error = ""
+    if "csv_converted" not in st.session_state:
+        st.session_state.csv_converted = False
+    if "csv_json_output" not in st.session_state:
+        st.session_state.csv_json_output = ""
+    if "csv_convert_error" not in st.session_state:
+        st.session_state.csv_convert_error = ""
     if "csv_mode" not in st.session_state:
         st.session_state.csv_mode = "CSV File"
 
 
 def _nest_flat_record(flat: Dict[str, Any]) -> Dict[str, Any]:
-    """Convert flat dict with dot-notation keys into nested dicts.
-
-    Example: {"addr.city": "X", "addr.zip": "Y"} -> {"addr": {"city": "X", "zip": "Y"}}
+    """
+    Convert a flat dictionary with dot-notation keys into a nested dictionary structure.
+    
+    Keys containing dots (e.g., "address.city") are split and converted into nested objects.
+    Keys without dots are kept at the top level.
+    
+    Args:
+        flat: A dictionary with potentially dot-notated keys
+        
+    Returns:
+        A nested dictionary structure
+        
+    Example:
+        >>> flat = {"name": "Alice", "address.city": "NYC", "address.zip": "10001"}
+        >>> _nest_flat_record(flat)
+        {"name": "Alice", "address": {"city": "NYC", "zip": "10001"}}
+        
+    Raises:
+        ValueError: If a key conflict is detected (e.g., both "address" and "address.city" exist)
     """
     nested: Dict[str, Any] = {}
     for key, value in flat.items():
@@ -44,9 +55,7 @@ def _nest_flat_record(flat: Dict[str, Any]) -> Dict[str, Any]:
                 cur = cur[p]
             cur[parts[-1]] = value
         else:
-            # avoid overwriting previously created nested object
             if key in nested and isinstance(nested[key], dict):
-                # Conflict: key exists as a nested object due to dotted keys, cannot assign non-dotted value
                 raise ValueError(
                     f"Conflict detected: key '{key}' exists as a nested object due to dotted keys, "
                     f"but also appears as a non-dotted key in the same record. "
@@ -91,7 +100,6 @@ def _records_from_df(df: pd.DataFrame, observe_nested: bool) -> List[Dict[str, A
     - When observe_nested is False, returns a simple list of flat dictionaries.
     - When observe_nested is True, uses `_nest_flat_record` to create nested structures.
     """
-    # Replace NaN/NA with empty strings so JSON contains empty strings instead of NaN/null
     df_clean = df.fillna("")
     records = df_clean.to_dict(orient="records")
     if observe_nested:
@@ -100,42 +108,43 @@ def _records_from_df(df: pd.DataFrame, observe_nested: bool) -> List[Dict[str, A
 
 
 def _convert_from_file(file_obj):
-    st.session_state.convert_error = ""
+    st.session_state.csv_convert_error = ""
     if not file_obj:
-        st.session_state.convert_error = "No file uploaded"
+        st.session_state.csv_convert_error = "No file uploaded"
         return
     try:
-        # file_obj is an UploadedFile; read as text
         file_obj.seek(0)
         df = pd.read_csv(file_obj)
         records = _records_from_df(df, st.session_state.observe_nested)
-        st.session_state.json_output = json.dumps(records, indent=4)
-        st.session_state.converted = True
+        st.session_state.csv_json_output = json.dumps(records, indent=4)
+        st.session_state.csv_converted = True
     except Exception as e:
-        st.session_state.convert_error = str(e)
+        st.session_state.csv_convert_error = str(e)
 
 
 def _convert_from_text():
-    st.session_state.convert_error = ""
+    st.session_state.csv_convert_error = ""
     txt = st.session_state.get("csv_input", "")
     if not txt or not txt.strip():
-        st.session_state.convert_error = "No CSV text provided"
+        st.session_state.csv_convert_error = "No CSV text provided"
         return
     try:
         df = pd.read_csv(io.StringIO(txt))
         records = _records_from_df(df, st.session_state.observe_nested)
-        st.session_state.json_output = json.dumps(records, indent=4)
-        st.session_state.converted = True
+        st.session_state.csv_json_output = json.dumps(records, indent=4)
+        st.session_state.csv_converted = True
     except Exception as e:
-        st.session_state.convert_error = str(e)
+        st.session_state.csv_convert_error = str(e)
 
 
 def render():
     st.title("CSV → JSON Records")
     _ensure_state()
-    # If not converted, show upload/text entry controls
-    if not st.session_state.converted:
-        # Mode selector: Upload File or Paste CSV Text
+    # Reset page-specific state when navigating to this page from another page
+    page_id = "csv_to_json"
+    if st.session_state.get("last_rendered_page") != page_id:
+        st.session_state.csv_converted = False
+    if not st.session_state.csv_converted:
         mode = st.radio(
             "Input mode",
             ["CSV File", "CSV Text"],
@@ -143,11 +152,9 @@ def render():
             key="csv_mode",
         )
 
-        # Observe nested checkbox (present in both modes)
-        st.checkbox("Observe Nested Structures", value=st.session_state.observe_nested, key="observe_nested")
+        st.checkbox("Observe Nested Structures", key="observe_nested")
 
         if mode == "CSV File":
-            # File upload path: show uploader left-justified in a narrower left column and Convert button beneath it
             col_left, col_right = st.columns([4, 6])
             with col_left:
                 uploaded = st.file_uploader("Upload CSV file", type=["csv"], key="csv_file")
@@ -155,20 +162,16 @@ def render():
                 st.button("Convert CSV", on_click=_convert_from_file, args=(uploaded,), key="btn_convert_file", type="primary")
 
         else:
-            # Text entry path: show large textbox and Convert button below
-            st.text_area("Paste CSV text here", value=st.session_state.csv_input, height=320, key="csv_input")
+            st.text_area("Paste CSV text here", height=320, key="csv_input")
             st.button("Convert CSV", on_click=_convert_from_text, key="btn_convert_text", type="primary")
 
-        if st.session_state.convert_error:
-            st.error(st.session_state.convert_error)
+        if st.session_state.csv_convert_error:
+            st.error(st.session_state.csv_convert_error)
 
     else:
-        # Converted: show JSON output and Back button only
-        if st.session_state.json_output:
+        if st.session_state.csv_json_output:
             st.subheader("JSON Records")
-            # Render a copy + download UI using an HTML textarea and buttons.
-            json_text = st.session_state.json_output
-            # Show JSON in a textarea and provide copy/download buttons
+            json_text = st.session_state.csv_json_output
             escaped = _html.escape(json_text)
             html = f"""
             <div>
@@ -179,7 +182,6 @@ def render():
             </div>
             """
             components.html(html, height=500)
-            # Use Streamlit's built-in download button for safe file download
             st.download_button(
                 label="Download JSON",
                 data=json_text,
@@ -188,6 +190,13 @@ def render():
             )
 
         def _go_back():
-            st.session_state.converted = False
+            st.session_state.csv_converted = False
 
         st.button("Back", on_click=_go_back, type="primary")
+
+    # mark this page as the last rendered so other pages can detect navigation
+    st.session_state.last_rendered_page = page_id
+
+
+if __name__ == "__main__":
+    render()

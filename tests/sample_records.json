@@ -1,0 +1,112 @@
+[
+  {
+    "name": "Alice",
+    "age": 30,
+    "address": {
+      "line1": "123 Main St",
+      "line2": "Apt 1",
+      "city": "New York",
+      "state": "NY",
+      "zip": "10001"
+    }
+  },
+  {
+    "name": "Bob",
+    "age": 25,
+    "address": {
+      "line1": "456 Market Ave",
+      "line2": "",
+      "city": "San Francisco",
+      "state": "CA",
+      "zip": "94105"
+    }
+  },
+  {
+    "name": "Carol",
+    "age": 42,
+    "address": {
+      "line1": "789 Oak Dr",
+      "line2": "Suite 200",
+      "city": "Chicago",
+      "state": "IL",
+      "zip": "60611"
+    }
+  },
+  {
+    "name": "Dave",
+    "age": 35,
+    "address": {
+      "line1": "12 Pine Rd",
+      "line2": "",
+      "city": "Seattle",
+      "state": "WA",
+      "zip": "98101"
+    }
+  },
+  {
+    "name": "Eve",
+    "age": 29,
+    "address": {
+      "line1": "34 Elm St",
+      "line2": "Floor 3",
+      "city": "Boston",
+      "state": "MA",
+      "zip": "02108"
+    }
+  },
+  {
+    "name": "Frank",
+    "age": 51,
+    "address": {
+      "line1": "678 Cedar Ln",
+      "line2": "Unit B",
+      "city": "Denver",
+      "state": "CO",
+      "zip": "80202"
+    }
+  },
+  {
+    "name": "Grace",
+    "age": 24,
+    "address": {
+      "line1": "90 Birch Blvd",
+      "line2": "",
+      "city": "Austin",
+      "state": "TX",
+      "zip": "73301"
+    }
+  },
+  {
+    "name": "Heidi",
+    "age": 38,
+    "address": {
+      "line1": "210 Maple Ave",
+      "line2": "Apt 5C",
+      "city": "Portland",
+      "state": "OR",
+      "zip": "97205"
+    }
+  },
+  {
+    "name": "Ivan",
+    "age": 46,
+    "address": {
+      "line1": "321 Spruce St",
+      "line2": "",
+      "city": "Miami",
+      "state": "FL",
+      "zip": "33101"
+    }
+  },
+  {
+    "name": "Judy",
+    "age": 33,
+    "address": {
+      "line1": "555 Walnut Rd",
+      "line2": "Suite 10",
+      "city": "Atlanta",
+      "state": "GA",
+      "zip": "30303"
+    }
+  }
+]
