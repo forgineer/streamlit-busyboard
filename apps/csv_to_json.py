@@ -24,6 +24,26 @@ def _ensure_state():
 
 
 def _nest_flat_record(flat: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Convert a flat dictionary with dot-notation keys into a nested dictionary structure.
+    
+    Keys containing dots (e.g., "address.city") are split and converted into nested objects.
+    Keys without dots are kept at the top level.
+    
+    Args:
+        flat: A dictionary with potentially dot-notated keys
+        
+    Returns:
+        A nested dictionary structure
+        
+    Example:
+        >>> flat = {"name": "Alice", "address.city": "NYC", "address.zip": "10001"}
+        >>> _nest_flat_record(flat)
+        {"name": "Alice", "address": {"city": "NYC", "zip": "10001"}}
+        
+    Raises:
+        ValueError: If a key conflict is detected (e.g., both "address" and "address.city" exist)
+    """
     nested: Dict[str, Any] = {}
     for key, value in flat.items():
         if "." in key:
